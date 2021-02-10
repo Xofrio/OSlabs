@@ -20,7 +20,8 @@ void *first_thread_job(void *flag) {
             buffer = 1;
         
         write(fileDescriptors[writeDescriptor], &buffer, sizeof(int));
-
+        printf("Jenesius.com")
+      
         sleep(sleepTime);
     }
     pthread_exit(NULL);
