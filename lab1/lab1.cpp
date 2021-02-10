@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <unistd.h>
 
-constexpr int sleepTime { 1 };
+constexpr int firstCode     { 6 },
+              secondCode    { 9 },
+              sleepTime     { 1 };
 
 class Accessory {
     public:
@@ -23,7 +25,7 @@ void *first_thread_job(void *information) {
         fflush(stdout);
         sleep(sleepTime);
     }
-    pthread_exit((void*)223);
+    pthread_exit((void*)firstCode);
 }
 
 void *second_thread_job(void *information) {
@@ -34,7 +36,7 @@ void *second_thread_job(void *information) {
         fflush(stdout);
         sleep(sleepTime);
     }
-    pthread_exit((void*)322);
+    pthread_exit((void*)secondCode);
 }
 
 int main() {
