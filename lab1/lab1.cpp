@@ -38,7 +38,8 @@ void *second_thread_job(void *information) {
 }
 
 int main() {
-    pthread_t thread1, thread2;
+    pthread_t thread1, 
+              thread2;
     Accessory forFirstThread    { '1', true },
               forSecondThread   { '2', true };
 
