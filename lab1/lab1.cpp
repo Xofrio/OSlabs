@@ -23,6 +23,7 @@ void *first_thread_job(void *information) {
     while(*(&((Accessory*)information)->flag)) {
         printf("%c", symbol);
         fflush(stdout);
+      
         sleep(sleepTime);
     }
     pthread_exit((void*)firstCode);
@@ -34,6 +35,7 @@ void *second_thread_job(void *information) {
     while(*(&((Accessory*)information)->flag)) {
         printf("%c", symbol);
         fflush(stdout);
+      
         sleep(sleepTime);
     }
     pthread_exit((void*)secondCode);
