@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+constexpr int sleepTime { 1 };
+
 class Accessory {
     public:
         bool flag;
@@ -19,7 +21,7 @@ void *first_thread_job(void *information) {
     while(*(&((Accessory*)information)->flag)) {
         printf("%c", symbol);
         fflush(stdout);
-        sleep(1);
+        sleep(sleepTime);
     }
     pthread_exit((void*)223);
 }
@@ -30,14 +32,15 @@ void *second_thread_job(void *information) {
     while(*(&((Accessory*)information)->flag)) {
         printf("%c", symbol);
         fflush(stdout);
-        sleep(1);
+        sleep(sleepTime);
     }
     pthread_exit((void*)322);
 }
 
 int main() {
     pthread_t thread1, thread2;
-    Accessory forFirstThread{ '1', true }, forSecondThread{ '2', true };
+    Accessory forFirstThread    { '1', true },
+              forSecondThread   { '2', true };
 
     pthread_create(&thread1, NULL, &first_thread_job, (void*)&forFirstThread);
     pthread_create(&thread2, NULL, &second_thread_job, (void*)&forSecondThread);
@@ -45,7 +48,8 @@ int main() {
     getchar();
 
     forFirstThread.flag = forSecondThread.flag = false;
-    int result1{}, result2{};
+    int result1{},
+        result2{};
 
     pthread_join(thread1, (void**)&result1);
     pthread_join(thread2, (void**)&result2);
