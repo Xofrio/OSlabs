@@ -3,3 +3,5 @@
 
 ## [Лабораторная работа №1](https://github.com/Xofrio/OSlabs/tree/main/lab1): Создание и уничтожение потоков
 
+
+## [Лабораторная работа №3](https://github.com/Xofrio/OSlabs/tree/main/lab3): Взаимодействие потоков через неименованные каналы
