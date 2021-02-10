@@ -51,8 +51,8 @@ int main() {
     getchar();
 
     forFirstThread.flag = forSecondThread.flag = false;
-    int result1{},
-        result2{};
+    int result1 { 0 },
+        result2 { 0 };
 
     pthread_join(thread1, (void**)&result1);
     pthread_join(thread2, (void**)&result2);
