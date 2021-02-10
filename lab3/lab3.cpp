@@ -46,7 +46,8 @@ int main() {
 
     pipe(fileDescriptors);
     //pipe2(fileDescriptors, O_NONBLOCK);
-    //fcntl(fileDescriptors, F_SETFL, O_NONBLOCK);
+    //fcntl(fileDescriptors[0], F_SETFL, O_NONBLOCK);
+    //fcntl(fileDescriptors[1], F_SETFL, O_NONBLOCK);
     
     pthread_create(&thread1, NULL, &first_thread_job, &flag1);
     pthread_create(&thread2, NULL, &second_thread_job, &flag2);
