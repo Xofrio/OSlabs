@@ -9,7 +9,7 @@ constexpr int numberOfDescriptors { 2 },
               sleepTime           { 1 };
 bool flag1 { true },
      flag2 { true };
-int fileDescriptors[numberOfDescriptors] {};
+int fileDescriptors[numberOfDescriptors] { 0 };
 
 void *first_thread_job(void *flag) {
     int buffer { 0 };
