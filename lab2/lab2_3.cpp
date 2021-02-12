@@ -39,7 +39,7 @@ void *first_thread_job(void *information) {
             sleep(sleepTime);
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 void *second_thread_job(void *information) {
@@ -60,7 +60,7 @@ void *second_thread_job(void *information) {
             sleep(sleepTime);
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 int main() {
@@ -69,20 +69,20 @@ int main() {
     Accessory forFirstThread  { 5, 1, true, '1' },
               forSecondThread { 5, 1, true, '2' };
               
-    pthread_mutex_init(&mutex, NULL);
+    pthread_mutex_init(&mutex, nullptr);
 
-    if (pthread_create(&thread1, NULL, &first_thread_job, (void*)&forFirstThread))
+    if (pthread_create(&thread1, nullptr, &first_thread_job, (void*)&forFirstThread))
         perror("Failed to create thread 1.");
-    if (pthread_create(&thread2, NULL, &second_thread_job, (void*)&forSecondThread))
+    if (pthread_create(&thread2, nullptr, &second_thread_job, (void*)&forSecondThread))
         perror("Failed to create thread 2.");
 
     getchar();
 
     forFirstThread.flag = forSecondThread.flag = false;
 
-    if (pthread_join(thread1, NULL))
+    if (pthread_join(thread1, nullptr))
         perror("Failed to join thread 1.");
-    if (pthread_join(thread2, NULL))
+    if (pthread_join(thread2, nullptr))
         perror("Failed to join thread 2.");
 
     pthread_mutex_destroy(&mutex);
