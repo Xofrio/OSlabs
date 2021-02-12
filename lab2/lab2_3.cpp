@@ -24,7 +24,7 @@ class Accessory {
 void *first_thread_job(void *information) {
     char symbol { *(&((Accessory*)information)->data) };
     int numberOfSymbols { *(&((Accessory*)information)->numberOfSymbols) },
-        sleepTime { *(&((Accessory*)information)->sleepTime) };
+        sleepTime       { *(&((Accessory*)information)->sleepTime) };
     
     while(*(&((Accessory*)information)->flag)) {
         clock_gettime(CLOCK_REALTIME, &((Accessory*)information)->time);
@@ -45,7 +45,7 @@ void *first_thread_job(void *information) {
 void *second_thread_job(void *information) {
     char symbol { *(&((Accessory*)information)->data) };
     int numberOfSymbols { *(&((Accessory*)information)->numberOfSymbols) },
-        sleepTime { *(&((Accessory*)information)->sleepTime) };
+        sleepTime       { *(&((Accessory*)information)->sleepTime) };
     
     while(*(&((Accessory*)information)->flag)) {
         clock_gettime(CLOCK_REALTIME, &((Accessory*)information)->time);
@@ -66,8 +66,8 @@ void *second_thread_job(void *information) {
 int main() {
     pthread_t thread1, 
               thread2;
-    Accessory forFirstThread    { 5, 1, true, '1' },
-              forSecondThread   { 5, 1, true, '2' };
+    Accessory forFirstThread  { 5, 1, true, '1' },
+              forSecondThread { 5, 1, true, '2' };
               
     pthread_mutex_init(&mutex, NULL);
 
