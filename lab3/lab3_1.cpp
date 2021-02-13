@@ -27,7 +27,7 @@ void *first_thread_job(void *flag) {
       
         sleep(sleepTime);
     }
-    pthread_exit(NULL);
+    pthread_exit(nullptr);
 }
 
 void *second_thread_job(void *flag) {
@@ -45,7 +45,7 @@ void *second_thread_job(void *flag) {
         
         sleep(sleepTime);
     }
-    pthread_exit(NULL);
+    pthread_exit(nullptr);
 }
 
 int main() {
@@ -54,15 +54,15 @@ int main() {
 
     pipe(fileDescriptors);
     
-    pthread_create(&thread1, NULL, &first_thread_job, &flag1);
-    pthread_create(&thread2, NULL, &second_thread_job, &flag2);
+    pthread_create(&thread1, nullptr, &first_thread_job, &flag1);
+    pthread_create(&thread2, nullptr, &second_thread_job, &flag2);
     
     getchar();
     
     flag1 = flag2 = false;
 
-    pthread_join(thread1, NULL);
-    pthread_join(thread2, NULL);
+    pthread_join(thread1, nullptr);
+    pthread_join(thread2, nullptr);
 
     close(fileDescriptors[readDescriptor]);
     close(fileDescriptors[writeDescriptor]);
