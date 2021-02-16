@@ -1,0 +1,5 @@
+#!/bin/bash
+g++ lab4_1.cpp -o lab4_1
+./lab4_1 asd qwe zxc
+
+

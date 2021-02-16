@@ -1,0 +1,5 @@
+#!/bin/bash
+g++ lab4_1.cpp -o lab4_1
+g++ lab4_3.cpp -o lab4_3
+./lab4_3
+
