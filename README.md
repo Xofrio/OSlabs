@@ -8,3 +8,7 @@
 
 
 ## [Лабораторная работа №3](https://github.com/Xofrio/OSlabs/tree/main/lab3): Взаимодействие потоков через неименованные каналы
+
+
+## [Лабораторная работа №4](https://github.com/Xofrio/OSlabs/tree/main/lab4): Создание и уничтожение процессов
+
