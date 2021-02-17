@@ -12,10 +12,10 @@ int child_function(void *arguments) {
 
     execl("./lab4_1",
               "./lab4_1",
-              "lab4_3 1st message",
-              "lab4_3 2nd message",
-              "lab4_3 3rd message",
-              NULL);
+              "lab4_3's 1st msg",
+              "lab4_3's 2nd msg",
+              "lab4_3's 3rd msg",
+              nullptr);
     
     return 0;
 }
