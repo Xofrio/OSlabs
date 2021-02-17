@@ -12,10 +12,6 @@ class Accessory {
 
         static pthread_mutex_t mutex;
 
-        static void initialize(){
-            Accessory::mutex = PTHREAD_MUTEX_INITIALIZER;
-        }
-
         Accessory(int numberOfSymbols, int sleepTime, bool flag, char data) {
             this->numberOfSymbols = numberOfSymbols;
             this->sleepTime = sleepTime;
@@ -66,7 +62,7 @@ void *second_thread_job(void *information) {
     return nullptr;
 }
 
-pthread_mutex_t Accessory::mutex;
+pthread_mutex_t Accessory::mutex ( PTHREAD_MUTEX_INITIALIZER );
 
 int main() {
     pthread_t thread1, 
