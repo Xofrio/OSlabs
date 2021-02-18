@@ -20,12 +20,13 @@ class Accessory {
         }
 };
 
-void *first_thread_job(void *information) {
-    char symbol { *(&((Accessory*)information)->data) };
+void *thread1_job(void *information) {
     int numberOfSymbols { *(&((Accessory*)information)->numberOfSymbols) },
         sleepTime       { *(&((Accessory*)information)->sleepTime) };
+    char symbol { *(&((Accessory*)information)->data) };
+    bool *flag { (&((Accessory*)information)->flag) };
     
-    while(*(&((Accessory*)information)->flag)) {
+    while(*flag) {
         clock_gettime(CLOCK_REALTIME, &((Accessory*)information)->time);
         *(&((Accessory*)information)->time.tv_sec) += 1;
 
@@ -33,6 +34,8 @@ void *first_thread_job(void *information) {
             for (int i { 0 }; i < numberOfSymbols; ++i) {
                 printf("%c", symbol);
                 fflush(stdout);
+
+                sleep(sleepTime);
             }
             pthread_mutex_unlock(&Accessory::mutex);
             sleep(sleepTime);
@@ -41,12 +44,13 @@ void *first_thread_job(void *information) {
     return nullptr;
 }
 
-void *second_thread_job(void *information) {
-    char symbol { *(&((Accessory*)information)->data) };
+void *thread2_job(void *information) {
     int numberOfSymbols { *(&((Accessory*)information)->numberOfSymbols) },
         sleepTime       { *(&((Accessory*)information)->sleepTime) };
+    char symbol { *(&((Accessory*)information)->data) };
+    bool *flag { (&((Accessory*)information)->flag) };
     
-    while(*(&((Accessory*)information)->flag)) {
+    while(*flag) {
         clock_gettime(CLOCK_REALTIME, &((Accessory*)information)->time);
         *(&((Accessory*)information)->time.tv_sec) += 1;
 
@@ -54,6 +58,8 @@ void *second_thread_job(void *information) {
             for (int i { 0 }; i < numberOfSymbols; ++i) {
                 printf("%c", symbol);
                 fflush(stdout);
+
+                sleep(sleepTime);
             }
             pthread_mutex_unlock(&Accessory::mutex);
             sleep(sleepTime);
@@ -67,17 +73,17 @@ pthread_mutex_t Accessory::mutex ( PTHREAD_MUTEX_INITIALIZER );
 int main() {
     pthread_t thread1, 
               thread2;
-    Accessory forFirstThread  { 5, 1, true, '1' },
-              forSecondThread { 5, 1, true, '2' };
+    Accessory forThread1 { 5, 1, 1, '1' },
+              forThread2 { 5, 1, 1, '2' };
 
-    if (pthread_create(&thread1, nullptr, &first_thread_job, (void*)&forFirstThread))
+    if (pthread_create(&thread1, nullptr, &thread1_job, (void*)&forThread1))
         perror("Failed to create thread 1.");
-    if (pthread_create(&thread2, nullptr, &second_thread_job, (void*)&forSecondThread))
+    if (pthread_create(&thread2, nullptr, &thread2_job, (void*)&forThread2))
         perror("Failed to create thread 2.");
 
     getchar();
 
-    forFirstThread.flag = forSecondThread.flag = false;
+    forThread1.flag = forThread2.flag = false;
 
     if (pthread_join(thread1, nullptr))
         perror("Failed to join thread 1.");
