@@ -68,8 +68,8 @@ void *thread2_job(void *information) {
 int main() {
     pthread_t thread1, 
               thread2;
-    Accessory forThread1 { 5, 1, 1, '1' },
-              forThread2 { 5, 1, 1, '2' };
+    Accessory forThread1 { 5, 1, true, '1' },
+              forThread2 { 5, 1, true, '2' };
 
     sem_init(&semaphore, 0, 1);
 

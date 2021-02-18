@@ -73,8 +73,8 @@ pthread_mutex_t Accessory::mutex ( PTHREAD_MUTEX_INITIALIZER );
 int main() {
     pthread_t thread1, 
               thread2;
-    Accessory forThread1 { 5, 1, 1, '1' },
-              forThread2 { 5, 1, 1, '2' };
+    Accessory forThread1 { 5, 1, true, '1' },
+              forThread2 { 5, 1, true, '2' };
 
     if (pthread_create(&thread1, nullptr, &thread1_job, (void*)&forThread1))
         perror("Failed to create thread 1.");
