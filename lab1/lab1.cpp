@@ -2,65 +2,75 @@
 #include <stdio.h>
 #include <unistd.h>
 
-constexpr int firstCode     { 6 },
-              secondCode    { 9 },
-              sleepTime     { 1 };
+constexpr int code1 { 6 },
+              code2 { 9 };
 
 class Accessory {
     public:
+        int sleepTime;
         bool flag;
         char data;
 
-        Accessory(char data, bool flag) {
+        Accessory(int sleepTime, bool flag, char data) {
+            this->sleepTime = sleepTime;
             this->flag = flag;
             this->data = data;
         }
 };
 
-void *first_thread_job(void *information) {
-    char symbol{ *(&((Accessory*)information)->data) };
+void *thread1_job(void *information) {
+    int sleepTime { *(&((Accessory*)information)->sleepTime) };
+    char symbol { *(&((Accessory*)information)->data) };
+    bool *flag { &((Accessory*)information)->flag };
 
-    while(*(&((Accessory*)information)->flag)) {
+    while(*flag) {
         printf("%c", symbol);
         fflush(stdout);
       
         sleep(sleepTime);
     }
-    pthread_exit((void*)firstCode);
+    pthread_exit((void*)code1);
 }
 
-void *second_thread_job(void *information) {
-    char symbol{ *(&((Accessory*)information)->data) };
+void *thread2_job(void *information) {
+    int sleepTime { *(&((Accessory*)information)->sleepTime) };
+    char symbol { *(&((Accessory*)information)->data) };
+    bool *flag { &((Accessory*)information)->flag };
 
-    while(*(&((Accessory*)information)->flag)) {
+    while(*flag) {
         printf("%c", symbol);
         fflush(stdout);
       
         sleep(sleepTime);
     }
-    pthread_exit((void*)secondCode);
+    pthread_exit((void*)code2);
 }
 
 int main() {
     pthread_t thread1, 
               thread2;
-    Accessory forFirstThread    { '1', true },
-              forSecondThread   { '2', true };
+    Accessory forThread1 { 1, true, '1' },
+              forThread2 { 1, true, '2' };
 
-    pthread_create(&thread1, NULL, &first_thread_job, (void*)&forFirstThread);
-    pthread_create(&thread2, NULL, &second_thread_job, (void*)&forSecondThread);
+    if (pthread_create(&thread1, nullptr, &thread1_job, (void*)&forThread1))
+        perror("Failed to create thread 1.");
+    if (pthread_create(&thread2, nullptr, &thread2_job, (void*)&forThread2))
+        perror("Failed to create thread 2.");
 
     getchar();
 
-    forFirstThread.flag = forSecondThread.flag = false;
+    forThread1.flag = forThread2.flag = false;
+
     int result1 { 0 },
         result2 { 0 };
 
-    pthread_join(thread1, (void**)&result1);
-    pthread_join(thread2, (void**)&result2);
+    if (pthread_join(thread1, nullptr))
+        perror("Failed to join thread 1.");
+    if (pthread_join(thread2, nullptr))
+        perror("Failed to join thread 2.");
 
-    printf("Return code from thread one is: %d.\n", result1);
-    printf("Return code from thread two is: %d.\n", result2);
+    printf("Thread 1 return code: %d.\n", result1);
+    printf("Thread 2 return code: %d.\n", result2);
 
     return 0;
 }
