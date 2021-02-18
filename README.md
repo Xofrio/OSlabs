@@ -12,3 +12,7 @@
 
 ## [Лабораторная работа №4](https://github.com/Xofrio/OSlabs/tree/main/lab4): Создание и уничтожение процессов
 
+
+## [Лабораторная работа №5](https://github.com/Xofrio/OSlabs/tree/main/lab5): Синхронизация процессов с помощью именованных семарофов
+
+

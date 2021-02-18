@@ -1,0 +1,7 @@
+#!/bin/bash
+g++ lab5_1.cpp -lpthread -o lab5_1
+g++ lab5_2.cpp -lpthread -o lab5_2
+gnome-terminal --title="lab5_1 output" --geometry=70x50+0+0 -- ./lab5_1
+gnome-terminal --title="lab5_2 output" --geometry=70x50-0+0 -- ./lab5_2
+sleep 1
+gnome-terminal --title="lab5.txt" --geometry=100x50+100+150 -- tail -f lab5.txt
