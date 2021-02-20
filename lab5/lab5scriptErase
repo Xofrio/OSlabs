@@ -1,0 +1,4 @@
+#!/bin/bash
+if [ -f "./lab5_1" ]; then rm ./lab5_1 && echo "Deleted lab5_1"; else echo "Couldn't find lab5_1"; fi
+if [ -f "./lab5_2" ]; then rm ./lab5_2 && echo "Deleted lab5_2"; else echo "Couldn't find lab5_2"; fi
+if [ -f "./lab5.txt" ]; then rm ./lab5.txt && echo "Deleted lab5.txt"; else echo "Couldn't find lab5.txt"; fi

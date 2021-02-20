@@ -11,24 +11,25 @@ class Accessory {
         bool flag;
         char data;
         FILE *file;
+        sem_t *semaphore;
 
-        Accessory(int numberOfSymbols, int sleepTime, bool flag, char data, FILE *file) {
+        Accessory(int numberOfSymbols, int sleepTime, bool flag, char data, FILE *file, sem_t *semaphore) {
             this->numberOfSymbols = numberOfSymbols;
             this->sleepTime = sleepTime;
             this->flag = flag;
             this->data = data;
             this->file = file;
+            this->semaphore = semaphore;
         }
 };
-
-sem_t *semaphore;
 
 void *thread_job(void *information) {
     char symbol { *(&((Accessory*)information)->data) };
     int numberOfSymbols { *(&((Accessory*)information)->numberOfSymbols) },
-        sleepTime { *(&((Accessory*)information)->sleepTime) };
+        sleepTime       { *(&((Accessory*)information)->sleepTime) };
     bool *flag { &((Accessory*)information)->flag };
     FILE *file { *(&((Accessory*)information)->file) };
+    sem_t *semaphore { *(&((Accessory*)information)->semaphore) };
 
     while(*flag) {
         if(!sem_wait(semaphore)) {
@@ -49,9 +50,7 @@ void *thread_job(void *information) {
 
 int main() {
     pthread_t thread;
-    Accessory forThread { 5, 1, true, '1', fopen("lab5.txt", "a+")};
-
-    semaphore = sem_open("/semaphore", O_CREAT, 0644, 1);
+    Accessory forThread { 5, 1, true, '1', fopen("lab5.txt", "a+"), sem_open("/semaphore", O_CREAT, 0644, 1)};
 
     if (pthread_create(&thread, nullptr, &thread_job, (void*)&forThread))
         perror("Failed to create thread in lab5_1.cpp.");
@@ -65,7 +64,7 @@ int main() {
 
     close(*(int*)forThread.file);
 
-    sem_close(semaphore);
+    sem_close(forThread.semaphore);
     sem_unlink("/semaphore");
 
     return 0;
