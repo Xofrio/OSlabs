@@ -1,7 +1,7 @@
+#include <fcntl.h>
 #include <pthread.h>
 #include <semaphore.h>
 #include <stdio.h>
-#include <fcntl.h>
 #include <unistd.h>
 
 class Accessory {
