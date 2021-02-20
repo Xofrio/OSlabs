@@ -64,7 +64,6 @@ void *thread2_job(void *information) {
     return nullptr;
 }
 
-
 int main() {
     pthread_t thread1, 
               thread2;
