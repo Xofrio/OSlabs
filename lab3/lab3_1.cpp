@@ -34,6 +34,8 @@ void *thread1_job(void *information) {
 
         if (writeStatus == -1)
             printf("Couldn't write to buffer. Error: %s\n", strerror(errno));
+        else
+            printf("Writer message: %d\n", buffer);
       
         sleep(sleepTime);
     }
@@ -53,7 +55,7 @@ void *thread2_job(void *information) {
         if (readStatus == -1)
             printf("Got no message from buffer. Error: %s\n", strerror(errno));
         else 
-            printf("Message: %d\n", buffer);
+            printf("Message from writer: %d\n", buffer);
         
         sleep(sleepTime);
     }

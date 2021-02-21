@@ -1,0 +1,5 @@
+#!/bin/bash
+g++ lab7_1.cpp -o lab7_1 -lpthread
+g++ lab7_2.cpp -o lab7_2 -lpthread
+gnome-terminal --title="Writer (lab7_1)" -- ./lab7_1
+gnome-terminal --title="Reader (lab7_2)" -- ./lab7_2

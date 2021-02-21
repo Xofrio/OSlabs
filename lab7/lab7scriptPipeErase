@@ -1,0 +1,2 @@
+#!/bin/bash
+if [ -e "/tmp/pipe" ]; then rm /tmp/pipe && echo "Deleted pipe 'pipe'"; else echo "Couldn't find pipe 'pipe'"; fi
