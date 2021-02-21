@@ -6,16 +6,26 @@
 
 constexpr int numberOfDescriptors { 2 },
               writeDescriptor     { 1 },
-              readDescriptor      { 0 },
-              sleepTime           { 1 };
-bool flag1 { true },
-     flag2 { true };
+              readDescriptor      { 0 };
 int fileDescriptors[numberOfDescriptors] { 0 };
 
-void *first_thread_job(void *flag) {
-    int buffer { 0 };
+class Accessory {
+    public:
+        int sleepTime;
+        bool flag;
 
-    while(*(bool*)flag) {
+        Accessory(int sleepTime, bool flag) {
+            this->sleepTime = sleepTime;
+            this->flag = flag;
+        }
+};
+
+void *thread1_job(void *information) {
+    int buffer    { 0 },
+        sleepTime { *(&((Accessory*)information)->sleepTime) };
+    bool *flag { (&((Accessory*)information)->flag) };
+
+    while(*flag) {
         ++buffer;
         if (buffer == 10)
             buffer = 1;
@@ -30,10 +40,12 @@ void *first_thread_job(void *flag) {
     pthread_exit(nullptr);
 }
 
-void *second_thread_job(void *flag) {
-    int buffer { 0 };
+void *thread2_job(void *information) {
+    int buffer    { 0 },
+        sleepTime { *(&((Accessory*)information)->sleepTime) };
+    bool *flag { &((Accessory*)information)->flag };
 
-    while(*(bool*)flag) {
+    while(*flag) {
         buffer = 0;
 
         ssize_t readStatus { read(fileDescriptors[readDescriptor], &buffer, sizeof(int)) };
@@ -51,18 +63,24 @@ void *second_thread_job(void *flag) {
 int main() {
     pthread_t thread1,
               thread2;
+    Accessory forThread1 { 1, true },
+              forThread2 { 1, true };
 
     pipe(fileDescriptors);
     
-    pthread_create(&thread1, nullptr, &first_thread_job, &flag1);
-    pthread_create(&thread2, nullptr, &second_thread_job, &flag2);
+    if (pthread_create(&thread1, nullptr, &thread1_job, (void*)&forThread1))
+        perror("Failed to create thread 1.");
+    if (pthread_create(&thread2, nullptr, &thread2_job, (void*)&forThread2))
+        perror("Failed to create thread 2.");
     
     getchar();
     
-    flag1 = flag2 = false;
+    forThread1.flag = forThread2.flag = false;
 
-    pthread_join(thread1, nullptr);
-    pthread_join(thread2, nullptr);
+    if (pthread_join(thread1, nullptr))
+        perror("Failed to join thread 1.");
+    if (pthread_join(thread2, nullptr))
+        perror("Failed to join thread 2.");
 
     close(fileDescriptors[readDescriptor]);
     close(fileDescriptors[writeDescriptor]);
