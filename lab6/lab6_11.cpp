@@ -32,7 +32,7 @@ void *thread_job(void *information) {
         if (data == 11)
             data = 1;
         
-        printf("%d\n", data);
+        printf("Generated value in writer lab6_11: %d\n", data);
 
         memcpy(adress, &data, sizeof(int));
 

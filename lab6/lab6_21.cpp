@@ -31,11 +31,9 @@ void *thread_job(void *information) {
     while(*flag) {
         sem_wait(semaphoreWrite);
 
-        sleep(sleepTime);
-
         memcpy(&data, adress, sizeof(int));
 
-        printf("%d\n", data);
+        printf("Value from writer lab6_11: %d\n", data);
 
         sem_post(semaphoreRead);
 

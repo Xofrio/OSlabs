@@ -1,0 +1,4 @@
+#!/bin/bash
+if [ -f "/dev/shm/sem.semaphoreRead" ]; then rm /dev/shm/sem.semaphoreRead && echo "Deleted semaphore 'sem.semaphoreRead'"; else echo "Couldn't find semaphore 'sem.semaphoreRead'"; fi
+if [ -f "/dev/shm/sem.semaphoreWrite" ]; then rm /dev/shm/sem.semaphoreWrite && echo "Deleted semaphore 'sem.semaphoreWrite'"; else echo "Couldn't find semaphore 'sem.semaphoreWrite'"; fi
+if [ -f "/dev/shm/sem.sharedMemory" ]; then rm /dev/shm/sem.sharedMemory && echo "Deleted semaphore 'sem.sharedMemory'"; else echo "Couldn't find semaphore 'sem.sharedMemory'"; fi

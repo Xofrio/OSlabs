@@ -33,7 +33,7 @@ void *thread_job(void *information) {
         if (data == 11)
             data = 1;
         
-        printf("%d\n", data);
+        printf("Generated value in writer lab6_1: %d\n", data);
 
         memcpy(adress, &data, sizeof(int));
 
@@ -50,7 +50,7 @@ void *thread_job(void *information) {
 
 int main() {
     pthread_t thread;
-    Accessory forThread { 2, true };
+    Accessory forThread { 1, true };
     int sharedMemory { shmget(ftok("/tmp", 'a'), sizeof(int), 0644 | IPC_CREAT) };
 
     forThread.adress = (int*)shmat(sharedMemory, nullptr, 0);
