@@ -45,7 +45,7 @@ int main() {
 
     mkfifo("/tmp/pipe", 0644);
     
-    forThread.fileDescriptor = open("/tmp/pipe", O_RDONLY);
+    forThread.fileDescriptor = open("/tmp/pipe", O_RDONLY | O_NONBLOCK);
     
     if (pthread_create(&thread, nullptr, &thread_job, (void*)&forThread))
         perror("Failed to create thread in lab7_2.cpp.");
