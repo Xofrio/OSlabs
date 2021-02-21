@@ -1,0 +1,5 @@
+#!/bin/bash
+g++ lab6_1.cpp -o lab6_1 -lpthread
+g++ lab6_2.cpp -o lab6_2 -lpthread
+gnome-terminal --title="Writer (lab6_1, SVID)" -- ./lab6_1
+gnome-terminal --title="Reader (lab6_2, SVID)" -- ./lab6_2
