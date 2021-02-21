@@ -44,6 +44,7 @@ int main() {
     Accessory forThread { 1, true };
 
     mkfifo("/tmp/pipe", 0644);
+    
     forThread.fileDescriptor = open("/tmp/pipe", O_RDONLY);
     
     if (pthread_create(&thread, nullptr, &thread_job, (void*)&forThread))
