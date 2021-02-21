@@ -31,6 +31,8 @@ void *thread_job(void *information) {
     while(*flag) {
         sem_wait(semaphoreWrite);
 
+        sleep(sleepTime);
+
         memcpy(&data, adress, sizeof(int));
 
         printf("%d\n", data);
