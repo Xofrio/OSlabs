@@ -20,8 +20,8 @@ class Accessory {
 
 void *thread1_job(void *information) {
     int sleepTime { *(&((Accessory*)information)->sleepTime) };
-    char symbol { *(&((Accessory*)information)->data) };
     bool *flag { &((Accessory*)information)->flag };
+    char symbol { *(&((Accessory*)information)->data) };
 
     while(*flag) {
         printf("%c", symbol);
@@ -34,8 +34,8 @@ void *thread1_job(void *information) {
 
 void *thread2_job(void *information) {
     int sleepTime { *(&((Accessory*)information)->sleepTime) };
-    char symbol { *(&((Accessory*)information)->data) };
     bool *flag { &((Accessory*)information)->flag };
+    char symbol { *(&((Accessory*)information)->data) };
 
     while(*flag) {
         printf("%c", symbol);

@@ -13,12 +13,7 @@ int main(int argc, char *argv[]) {
     if(!pid) {
         printf("lab4_2 child's PID is: \t\t%d\n\n", getpid());
 
-        execl("./lab4_1",
-              "./lab4_1",
-              "lab4_2's 1st msg",
-              "lab4_2's 2nd msg",
-              "lab4_2's 3rd msg",
-              nullptr);
+        execl("./lab4_1", "./lab4_1", "lab4_2's 1st msg", "lab4_2's 2nd msg", "lab4_2's 3rd msg", nullptr);
     }
     else {
         int sleepTime { 500000 },

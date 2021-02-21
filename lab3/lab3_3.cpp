@@ -24,7 +24,7 @@ class Accessory {
 void *thread1_job(void *information) {
     int buffer    { 0 },
         sleepTime { *(&((Accessory*)information)->sleepTime) };
-    bool *flag { (&((Accessory*)information)->flag) };
+    bool *flag { &((Accessory*)information)->flag };
 
     while(*flag) {
         ++buffer;
@@ -46,7 +46,7 @@ void *thread1_job(void *information) {
 void *thread2_job(void *information) {
     int buffer    { 0 },
         sleepTime { *(&((Accessory*)information)->sleepTime) };
-    bool *flag { (&((Accessory*)information)->flag) };
+    bool *flag { &((Accessory*)information)->flag };
 
     while(*flag) {
         buffer = 0;

@@ -10,12 +10,7 @@
 int child_function(void *arguments) {
     printf("lab4_3 child's PID is: \t\t%d\n\n", getpid());
 
-    execl("./lab4_1",
-              "./lab4_1",
-              "lab4_3's 1st msg",
-              "lab4_3's 2nd msg",
-              "lab4_3's 3rd msg",
-              nullptr);
+    execl("./lab4_1", "./lab4_1", "lab4_3's 1st msg", "lab4_3's 2nd msg", "lab4_3's 3rd msg", nullptr);
     
     return 0;
 }
@@ -51,5 +46,6 @@ int main(int argc, char *argv[]) {
         
     if (WIFEXITED(status))
         printf("\nChild process finished with code: %d\n", WEXITSTATUS(status));
+    
     return 0;
 }

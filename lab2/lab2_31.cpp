@@ -24,8 +24,8 @@ sem_t semaphore;
 void *thread1_job(void *information) {
     int numberOfSymbols { *(&((Accessory*)information)->numberOfSymbols) },
         sleepTime       { *(&((Accessory*)information)->sleepTime) };
+    bool *flag { &((Accessory*)information)->flag };
     char symbol { *(&((Accessory*)information)->data) };
-    bool *flag { (&((Accessory*)information)->flag) };
     
     while(*flag) {
         clock_gettime(CLOCK_REALTIME, &((Accessory*)information)->time);
@@ -49,8 +49,8 @@ void *thread1_job(void *information) {
 void *thread2_job(void *information) {
     int numberOfSymbols { *(&((Accessory*)information)->numberOfSymbols) },
         sleepTime       { *(&((Accessory*)information)->sleepTime) };
+    bool *flag { &((Accessory*)information)->flag };
     char symbol { *(&((Accessory*)information)->data) };
-    bool *flag { (&((Accessory*)information)->flag) };
     
     while(*flag) {
         clock_gettime(CLOCK_REALTIME, &((Accessory*)information)->time);

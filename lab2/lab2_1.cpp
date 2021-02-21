@@ -22,8 +22,8 @@ class Accessory {
 void *thread1_job(void *information) {
     int numberOfSymbols { *(&((Accessory*)information)->numberOfSymbols) },
         sleepTime       { *(&((Accessory*)information)->sleepTime) };
+    bool *flag { &((Accessory*)information)->flag };
     char symbol { *(&((Accessory*)information)->data) };
-    bool *flag { (&((Accessory*)information)->flag) };
 
     while(*flag) {
         pthread_mutex_lock(&Accessory::mutex);
@@ -44,9 +44,9 @@ void *thread1_job(void *information) {
 void *thread2_job(void *information) {
     int numberOfSymbols { *(&((Accessory*)information)->numberOfSymbols) },
         sleepTime       { *(&((Accessory*)information)->sleepTime) };
+    bool *flag { &((Accessory*)information)->flag };
     char symbol { *(&((Accessory*)information)->data) };
-    bool *flag { (&((Accessory*)information)->flag) };
-
+    
     while(*flag) {
         pthread_mutex_lock(&Accessory::mutex);
 

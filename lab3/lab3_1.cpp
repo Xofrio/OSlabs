@@ -23,7 +23,7 @@ class Accessory {
 void *thread1_job(void *information) {
     int buffer    { 0 },
         sleepTime { *(&((Accessory*)information)->sleepTime) };
-    bool *flag { (&((Accessory*)information)->flag) };
+    bool *flag { &((Accessory*)information)->flag };
 
     while(*flag) {
         ++buffer;

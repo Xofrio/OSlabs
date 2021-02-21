@@ -24,10 +24,10 @@ class Accessory {
 };
 
 void *thread_job(void *information) {
-    char symbol { *(&((Accessory*)information)->data) };
     int numberOfSymbols { *(&((Accessory*)information)->numberOfSymbols) },
         sleepTime       { *(&((Accessory*)information)->sleepTime) };
     bool *flag { &((Accessory*)information)->flag };
+    char symbol { *(&((Accessory*)information)->data) };
     FILE *file { *(&((Accessory*)information)->file) };
     sem_t *semaphore { *(&((Accessory*)information)->semaphore) };
 
