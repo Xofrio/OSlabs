@@ -1,6 +1,6 @@
 #!/bin/bash
 g++ lab6_11.cpp -o lab6_11 -lpthread -lrt
 g++ lab6_21.cpp -o lab6_21 -lpthread -lrt
-gnome-terminal --title="Writer (lab6_11, POSIX)" -- ./lab6_11
-gnome-terminal --title="Reader (lab6_21, POSIX)" -- ./lab6_21
+gnome-terminal --title="Writer (lab6_11, POSIX)" --geometry=70x50+0+0 -- ./lab6_11
+gnome-terminal --title="Reader (lab6_21, POSIX)" --geometry=70x50-0+0 -- ./lab6_21
 

@@ -32,7 +32,7 @@ void *thread_job(void *information) {
         if (readStatus == -1)
             printf("Got no message from buffer. Error: %s\n", strerror(errno));
         else
-            printf("Message from writer: %d\n", buffer);
+            printf(buffer ? "I got a message: %d\n" : "Got no message. Local data: %d\n" , buffer);
 
         sleep(sleepTime);
     }

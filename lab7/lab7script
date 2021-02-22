@@ -1,6 +1,5 @@
 #!/bin/bash
 g++ lab7_1.cpp -o lab7_1 -lpthread
 g++ lab7_2.cpp -o lab7_2 -lpthread
-gnome-terminal --title="Reader (lab7_2)" -- ./lab7_2
-sleep 5
-gnome-terminal --title="Writer (lab7_1)" -- ./lab7_1
+gnome-terminal --title="Writer (lab7_1)" --geometry=70x50+0+0 -- ./lab7_1
+gnome-terminal --title="Reader (lab7_2)" --geometry=70x50-0+0 -- ./lab7_2
