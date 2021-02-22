@@ -1,0 +1,5 @@
+#!/bin/bash
+g++ lab8_11.cpp -o lab8_11 -lpthread -lrt
+g++ lab8_21.cpp -o lab8_21 -lpthread -lrt
+gnome-terminal --title="Writer (lab8_11, POSIX)" -- ./lab8_11
+gnome-terminal --title="Reader (lab8_21, POSIX)" -- ./lab8_21

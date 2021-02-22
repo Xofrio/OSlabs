@@ -1,16 +1,17 @@
 #include <cstring>
 #include <errno.h>
-#include <fcntl.h>
+#include <mqueue.h>
 #include <pthread.h>
 #include <stdio.h>
-#include <sys/stat.h>
 #include <unistd.h>
+
+constexpr int bufferSize  { 8192 };
 
 class Accessory {
     public:
-        int sleepTime,
-            fileDescriptor;
+        int sleepTime;
         bool flag;
+        mqd_t queue;
 
         Accessory(int sleepTime, bool flag) {
             this->sleepTime = sleepTime;
@@ -19,20 +20,19 @@ class Accessory {
 };
 
 void *thread_job(void *information) {
-    int buffer         { 0 },
-        sleepTime      { *(&((Accessory*)information)->sleepTime) },
-        fileDescriptor { *(&((Accessory*)information)->fileDescriptor) };
+    int sleepTime { *(&((Accessory*)information)->sleepTime) };
     bool *flag { &((Accessory*)information)->flag };
+    char buffer[bufferSize];
 
     while(*flag) {
-        buffer = 0;
+        buffer[0] = { '\0' };
 
-        ssize_t readStatus { read(fileDescriptor, &buffer, sizeof(int)) };
+        ssize_t readStatus { mq_receive(*(&((Accessory*)information)->queue), buffer, bufferSize, 0) };
 
         if (readStatus == -1)
             printf("Got no message from buffer. Error: %s\n", strerror(errno));
         else
-            printf(buffer ? "I got a message: %d\n" : "Got no message. Local data: %d\n" , buffer);
+            printf(buffer ? "I got a message: %s\n" : "Got no message. Local data: %s\n" , buffer);
 
         sleep(sleepTime);
     }
@@ -43,22 +43,20 @@ int main() {
     pthread_t thread;
     Accessory forThread { 1, true };
 
-    mkfifo("/tmp/pipe", 0644);
-    
-    forThread.fileDescriptor = open("/tmp/pipe", O_RDONLY | O_NONBLOCK);
+    forThread.queue = mq_open("/queue", O_CREAT | O_RDONLY | O_NONBLOCK, 0644, nullptr);
     
     if (pthread_create(&thread, nullptr, &thread_job, (void*)&forThread))
-        perror("Failed to create thread in lab7_2.cpp.");
+        perror("Failed to create thread in lab8_21.cpp.");
 
     getchar();
 
     forThread.flag = false;
 
     if (pthread_join(thread, nullptr))
-        perror("Failed to join thread in lab7_2.cpp.");
+        perror("Failed to join thread in lab8_21.cpp.");
 
-    close(forThread.fileDescriptor);
-    unlink("/tmp/pipe");
+    mq_close(forThread.queue);
+    mq_unlink("/queue");
 
     return 0;
 }

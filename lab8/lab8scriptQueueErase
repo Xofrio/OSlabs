@@ -1,0 +1,2 @@
+#!/bin/bash
+if [ -f "/dev/mqueue/queue" ]; then rm /dev/mqueue/queue && echo "Deleted queue 'queue'"; else echo "Couldn't find queue 'queue'"; fi

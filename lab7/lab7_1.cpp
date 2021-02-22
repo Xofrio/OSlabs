@@ -91,7 +91,6 @@ int main() {
         perror("Failed to join opening thread in lab7_1.cpp.");
 
     close(forThread.fileDescriptor);
-
     unlink("/tmp/pipe");
 
     return 0;
