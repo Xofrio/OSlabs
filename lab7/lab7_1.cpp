@@ -19,9 +19,9 @@ class Accessory {
 };
 
 void signal_handler(int signalNumber) {
-    printf("I managed to intercept SIGPIPE signal.\n"
-           "If you terminanated reader not with Enter, you can try to launch reader again.\n"
-           "Press Enter to terminate this program with a 5 seconds delay.\n");
+    printf("I've managed to intercept SIGPIPE signal.\n"
+           "If you terminated reader not with Enter, you can try to launch reader again.\n"
+           "Press Enter to terminate this program with a 5 second delay.\n");
     
     sleep(5);
 }

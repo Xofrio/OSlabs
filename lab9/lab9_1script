@@ -1,0 +1,5 @@
+#!/bin/bash
+g++ lab9_11.cpp -o lab9_11 -lpthread
+g++ lab9_21.cpp -o lab9_21 -lpthread
+gnome-terminal --title="Server (lab9_11, TCP)" -- ./lab9_11
+gnome-terminal --title="Client (lab9_21, TCP)" -- ./lab9_21
