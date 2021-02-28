@@ -19,16 +19,13 @@ constexpr size_t bufferSize { 256 },
 class Accessory {
     public:
         int clientSocket;
-        bool connectorFlag,
-             receiverFlag,
+        bool receiverFlag,
              requesterFlag;
-        pthread_t connectorThread,
-                  receiverThread,
+        pthread_t receiverThread,
                   requesterThread;
         sockaddr_in clientSocketAddress;
         
-        Accessory(bool connectorFlag, bool receiverFlag, bool requesterFlag) {
-            this->connectorFlag = connectorFlag;
+        Accessory(bool receiverFlag, bool requesterFlag) {
             this->receiverFlag = receiverFlag;
             this->requesterFlag = requesterFlag;
         }
@@ -49,7 +46,10 @@ void *requester(void *information) {
     
     while(*flag) {
         int length { snprintf(buffer, sizeof(buffer), "Request #%d", requestsCount) };
-        ssize_t sendStatus { send(clientSocket, &buffer, (size_t)length, 0) };
+
+        sleep(sleepTime);
+
+        ssize_t sendStatus { sendto(clientSocket, &buffer, (size_t)length, 0, (sockaddr*)&((Accessory*)information)->clientSocketAddress, sizeof(*(&((Accessory*)information)->clientSocketAddress))) };
 
         if (sendStatus == -1) {
             perror("Couldn't send the request. Error");
@@ -70,8 +70,9 @@ void *receiver(void *information) {
 
     while(*flag) {
         memset(buffer, 0, bufferSize);
+        socklen_t addressLength { sizeof(*(&((Accessory*)information)->clientSocketAddress)) };
 
-        ssize_t receiveStatus { recv(clientSocket, &buffer, bufferSize, 0) };
+        ssize_t receiveStatus { recvfrom(clientSocket, &buffer, bufferSize, 0, (sockaddr*)&((Accessory*)information)->clientSocketAddress, &addressLength) };
 
         if (receiveStatus == -1) {
             perror("Couldn't receive message. Error");
@@ -86,60 +87,32 @@ void *receiver(void *information) {
     pthread_exit(nullptr);
 }
 
-void *connector(void *information) {
-    int clientSocket { *(&((Accessory*)information)->clientSocket) };
-    bool *flag { &((Accessory*)information)->connectorFlag };
-
-    while(*flag) {
-        int result { connect(clientSocket, (sockaddr*)&((Accessory*)information)->clientSocketAddress, sizeof(((Accessory*)information)->clientSocketAddress)) };
-
-        if (result == -1) { 
-            perror("Couldn't establish a connection. Error");
-            
-            sleep(sleepTime);
-        }
-        else {
-            printf("Connection established!\n\n");
-
-            if (pthread_create(&((Accessory*)information)->requesterThread, nullptr, &requester, information))
-                perror("Failed to create requester thread in lab9_21. Error");
-            if (pthread_create(&((Accessory*)information)->receiverThread, nullptr, &receiver, information))
-                perror("Failed to create receiver thread in lab9_21. Error");
-            
-            pthread_exit(nullptr);
-        }
-    }
-    pthread_exit(nullptr);
-}
-
 int main() {
-    Accessory forThreads { true, true, true };
+    Accessory forThreads { true, true };
 
     signal(SIGPIPE, &signal_handler);
 
-    forThreads.clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+    forThreads.clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
 
     fcntl(forThreads.clientSocket, F_SETFL, O_NONBLOCK);
 
     forThreads.clientSocketAddress.sin_family = AF_INET;
-    forThreads.clientSocketAddress.sin_port = htons(7000);
+    forThreads.clientSocketAddress.sin_port = htons(8000);
     forThreads.clientSocketAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-    if (pthread_create(&forThreads.connectorThread, nullptr, &connector, (void*)&forThreads))
-        perror("Failed to create connector thread in lab9_21. Error");
-
+    if (pthread_create(&forThreads.receiverThread, nullptr, &receiver, (void*)&forThreads))
+        perror("Failed to create receiver thread in lab9_2. Error");
+    if (pthread_create(&forThreads.requesterThread, nullptr, &requester, (void*)&forThreads))
+        perror("Failed to create requester thread in lab9_2. Error");
+    
     getchar();
 
-    forThreads.connectorFlag = forThreads.receiverFlag = forThreads.requesterFlag = false;
+    forThreads.receiverFlag = forThreads.requesterFlag = false;
 
-    if (pthread_join(forThreads.connectorThread, nullptr))
-        perror("Failed to join connector thread in lab9_21. Error");
     if (pthread_join(forThreads.receiverThread, nullptr))
-        perror("Failed to join receiver thread in lab9_21. Error");
+        perror("Failed to join receiver thread in lab9_2. Error");
     if (pthread_join(forThreads.requesterThread, nullptr))
-        perror("Failed to join requester thread in lab9_21. Error");
-
-    shutdown(forThreads.clientSocket, 2);
+        perror("Failed to join requester thread in lab9_2. Error");
     
     close(forThreads.clientSocket);
 

@@ -1,3 +1,4 @@
+#include <arpa/inet.h>
 #include <cstring>
 #include <fcntl.h>
 #include <netinet/in.h>
@@ -16,22 +17,19 @@ constexpr size_t bufferSize { 256 },
 
 class Accessory {
     public:
-        int listenSocket,
-            serverSocket;
-        bool connectorFlag,
-             receiverFlag,
+        int listenSocket;
+        bool receiverFlag,
              handlerFlag;
         std::vector <std::string> messageList;
-        pthread_t connectorThread,
-                  receiverThread,
+        pthread_t receiverThread,
                   handlerThread;
         sockaddr_in listenSocketAddress,
                     serverSocketAddress;
+        socklen_t addressLength;
         
         static pthread_mutex_t mutex;
 
-        Accessory(bool connectorFlag, bool receiverFlag, bool handlerFlag) {
-            this->connectorFlag = connectorFlag;
+        Accessory(bool receiverFlag, bool handlerFlag) {
             this->receiverFlag = receiverFlag;
             this->handlerFlag = handlerFlag;
         }
@@ -39,10 +37,12 @@ class Accessory {
 
 void *receiver(void *information) {
     bool *flag { &((Accessory*)information)->receiverFlag };
-    char buffer[bufferSize] { '\0' };
+    char buffer[bufferSize];
 
     while (*flag) {
-        int receiveStatus = recv(*(&((Accessory*)information)->serverSocket), (void*)buffer, bufferSize, 0);
+        memset(buffer, 0, bufferSize);
+
+        int receiveStatus = recvfrom(*(&((Accessory*)information)->listenSocket), (void*)buffer, bufferSize, 0, (sockaddr*)&((Accessory*)information)->serverSocketAddress, &((Accessory*)information)->addressLength);
 
         if (receiveStatus == -1) {
             perror("Couldn't receive the request. Error");
@@ -100,7 +100,7 @@ void *handler(void *information) {
             else if (count == 5)
                 snprintf(answer, sizeof(answer), "Version:\t%s", systemInformation.version);
 
-            ssize_t sendStatus { send(*(&((Accessory*)information)->serverSocket), (void*)answer, bufferSize, 0) };
+            ssize_t sendStatus { sendto(*(&((Accessory*)information)->listenSocket), (void*)answer, bufferSize, 0, (sockaddr*)&((Accessory*)information)->serverSocketAddress, *(&((Accessory*)information)->addressLength)) };
 
             if (sendStatus == -1)
                 perror("Couldn't send the message. Error");
@@ -120,42 +120,17 @@ void *handler(void *information) {
     pthread_exit(nullptr);
 }
 
-void *connector(void *information) {
-    bool *flag { &((Accessory*)information)->connectorFlag };
-    socklen_t addressLength = (socklen_t)sizeof(*(&((Accessory*)information)->serverSocketAddress));
-
-    while(*flag) {
-        *(&((Accessory*)information)->serverSocket) = accept(*(&((Accessory*)information)->listenSocket), (sockaddr *)&((Accessory*)information)->serverSocketAddress, &addressLength);
-
-        if (*(&((Accessory*)information)->serverSocket) == -1) {
-            perror("Couldn't establish a connection. Error");
-            
-            sleep(sleepTime);
-        }
-        else {
-            printf("Connection established!\n\n");
-            if (pthread_create(&((Accessory*)information)->handlerThread, nullptr, &handler, information))
-                perror("Failed to create handler thread in lab9_11. Error");
-            if (pthread_create(&((Accessory*)information)->receiverThread, nullptr, &receiver, information))
-                perror("Failed to create receiver thread in lab9_11. Error");
-
-            pthread_exit(nullptr);
-        }
-    }
-    pthread_exit(nullptr);
-}
-
 pthread_mutex_t Accessory::mutex ( PTHREAD_MUTEX_INITIALIZER );
 
 int main() {
-    Accessory forThreads { true, true, true };
+    Accessory forThreads { true, true };
 
-    forThreads.listenSocket = socket(AF_INET, SOCK_STREAM, 0);
+    forThreads.listenSocket = socket(AF_INET, SOCK_DGRAM, 0);
 
     fcntl(forThreads.listenSocket, F_SETFL, O_NONBLOCK);
 
     forThreads.listenSocketAddress.sin_family = AF_INET;
-    forThreads.listenSocketAddress.sin_port = htons(7000);
+    forThreads.listenSocketAddress.sin_port = htons(8000);
     forThreads.listenSocketAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 
     bind(forThreads.listenSocket, (sockaddr *)&forThreads.listenSocketAddress, sizeof(forThreads.listenSocketAddress));
@@ -164,26 +139,29 @@ int main() {
 
     setsockopt(forThreads.listenSocket, SOL_SOCKET, SO_REUSEADDR, &optionValue, sizeof(optionValue));
 
-    listen(forThreads.listenSocket,SOMAXCONN);
+    //listen(forThreads.listenSocket,SOMAXCONN);
+    memset(&forThreads.serverSocketAddress, 0, sizeof(forThreads.serverSocketAddress));
+    forThreads.serverSocketAddress.sin_family = AF_INET;
+    forThreads.serverSocketAddress.sin_port = htons(7000);
+    forThreads.serverSocketAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-    if (pthread_create(&forThreads.connectorThread, nullptr, &connector, (void*)&forThreads))
-        perror("Failed to create connector thread in lab9_11. Error");
+    forThreads.addressLength = sizeof(forThreads.serverSocketAddress);
+
+    if (pthread_create(&forThreads.receiverThread, nullptr, &receiver, (void*)&forThreads))
+        perror("Failed to create receiver thread in lab9_1. Error");
+    if (pthread_create(&forThreads.handlerThread, nullptr, &handler, (void*)&forThreads))
+        perror("Failed to create handler thread in lab9_1. Error");
 
     getchar();
+    
+    forThreads.receiverFlag = forThreads.handlerFlag = false;
 
-    forThreads.connectorFlag = forThreads.receiverFlag = forThreads.handlerFlag = false;
-
-    if(pthread_join(forThreads.connectorThread, nullptr))
-        perror("Failed to join connector thread in lab9_11. Error");
     if(pthread_join(forThreads.receiverThread, nullptr))
-        perror("Failed to join receiver thread in lab9_11. Error");
+        perror("Failed to join receiver thread in lab9_1. Error");
     if(pthread_join(forThreads.handlerThread, nullptr))
-        perror("Failed to join handler thread in lab9_11. Error");
-
-    shutdown(forThreads.serverSocket, 2);
+        perror("Failed to join handler thread in lab9_1. Error");
     
     close(forThreads.listenSocket);
-    close(forThreads.serverSocket);
 
     return 0;
 }
