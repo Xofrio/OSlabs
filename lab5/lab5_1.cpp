@@ -53,14 +53,14 @@ int main() {
     Accessory forThread { 5, 1, true, '1', fopen("lab5.txt", "a+"), sem_open("/semaphore", O_CREAT, 0644, 1)};
 
     if (pthread_create(&thread, nullptr, &thread_job, (void*)&forThread))
-        perror("Failed to create thread in lab5_1.cpp.");
+        perror("Failed to create thread in lab5_1. Error");
 
     getchar();
 
     forThread.flag = false;
 
     if (pthread_join(thread, nullptr))
-        perror("Failed to join thread in lab5_1.cpp.");
+        perror("Failed to join thread in lab5_1. Error");
 
     close(*(int*)forThread.file);
 

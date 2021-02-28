@@ -1,5 +1,4 @@
 #include <cstring>
-#include <errno.h>
 #include <mqueue.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -38,7 +37,7 @@ void *thread_job(void *information) {
         ssize_t readStatus { msgrcv(*(&((Accessory*)information)->queue), &((Accessory*)information)->message, sizeof((&((Accessory*)information)->message)->buffer), (&((Accessory*)information)->message)->type, IPC_NOWAIT) };
 
         if (readStatus == -1)
-            printf("Got no message from buffer. Error: %s\n", strerror(errno));
+            perror("Got no message from buffer. Error");
         else
             printf((&((Accessory*)information)->message)->buffer ? "I got a message: %c\n" : "Got no message. Local data: %c\n" , *((&((Accessory*)information)->message)->buffer));
 
@@ -54,14 +53,14 @@ int main() {
     forThread.queue = msgget(ftok("/tmp", 'a'), IPC_CREAT | 0644);
     
     if (pthread_create(&thread, nullptr, &thread_job, (void*)&forThread))
-        perror("Failed to create thread in lab8_2.cpp.");
+        perror("Failed to create thread in lab8_2. Error");
 
     getchar();
 
     forThread.flag = false;
 
     if (pthread_join(thread, nullptr))
-        perror("Failed to join thread in lab8_2.cpp.");
+        perror("Failed to join thread in lab8_2. Error");
 
     msgctl(forThread.queue, IPC_RMID, nullptr);
 

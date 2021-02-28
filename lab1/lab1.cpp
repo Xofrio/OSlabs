@@ -53,9 +53,9 @@ int main() {
               forThread2 { 1, true, '2' };
 
     if (pthread_create(&thread1, nullptr, &thread1_job, (void*)&forThread1))
-        perror("Failed to create thread 1.");
+        perror("Failed to create thread 1 in lab1. Error");
     if (pthread_create(&thread2, nullptr, &thread2_job, (void*)&forThread2))
-        perror("Failed to create thread 2.");
+        perror("Failed to create thread 2 in lab1. Error");
 
     getchar();
 
@@ -65,9 +65,9 @@ int main() {
         result2 { 0 };
 
     if (pthread_join(thread1, nullptr))
-        perror("Failed to join thread 1.");
+        perror("Failed to join thread 1 in lab1. Error");
     if (pthread_join(thread2, nullptr))
-        perror("Failed to join thread 2.");
+        perror("Failed to join thread 2 in lab1. Error");
 
     printf("Thread 1 return code: %d.\n", result1);
     printf("Thread 2 return code: %d.\n", result2);

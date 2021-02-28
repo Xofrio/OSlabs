@@ -1,5 +1,3 @@
-#include <cstring>
-#include <errno.h>
 #include <mqueue.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -30,7 +28,7 @@ void *thread_job(void *information) {
         ssize_t readStatus { mq_receive(*(&((Accessory*)information)->queue), buffer, bufferSize, 0) };
 
         if (readStatus == -1)
-            printf("Got no message from buffer. Error: %s\n", strerror(errno));
+            perror("Got no message from buffer. Error");
         else
             printf(buffer ? "I got a message: %s\n" : "Got no message. Local data: %s\n" , buffer);
 
@@ -46,14 +44,14 @@ int main() {
     forThread.queue = mq_open("/queue", O_CREAT | O_RDONLY | O_NONBLOCK, 0644, nullptr);
     
     if (pthread_create(&thread, nullptr, &thread_job, (void*)&forThread))
-        perror("Failed to create thread in lab8_21.cpp.");
+        perror("Failed to create thread in lab8_21. Error");
 
     getchar();
 
     forThread.flag = false;
 
     if (pthread_join(thread, nullptr))
-        perror("Failed to join thread in lab8_21.cpp.");
+        perror("Failed to join thread in lab8_21. Error");
 
     mq_close(forThread.queue);
     mq_unlink("/queue");

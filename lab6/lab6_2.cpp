@@ -54,14 +54,14 @@ int main() {
     forThread.semaphoreWrite = sem_open("/semaphoreWrite", O_CREAT, 0644, 0);
 
     if (pthread_create(&thread, nullptr, &thread_job, (void*)&forThread))
-        perror("Failed to create thread in lab6_2.cpp.");
+        perror("Failed to create thread in lab6_2. Error");
 
     getchar();
 
     forThread.flag = false;
 
     if (pthread_join(thread, nullptr))
-        perror("Failed to join thread in lab6_2.cpp.");
+        perror("Failed to join thread in lab6_2. Error");
 
     sem_close(forThread.semaphoreRead);
     sem_unlink("/semaphoreRead");

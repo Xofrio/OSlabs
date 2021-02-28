@@ -1,5 +1,3 @@
-#include <cstring>
-#include <errno.h>
 #include <fcntl.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -30,7 +28,7 @@ void *thread_job(void *information) {
         ssize_t readStatus { read(fileDescriptor, &buffer, sizeof(int)) };
 
         if (readStatus == -1)
-            printf("Got no message from buffer. Error: %s\n", strerror(errno));
+            perror("Got no message from buffer. Error");
         else
             printf(buffer ? "I got a message: %d\n" : "Got no message. Local data: %d\n" , buffer);
 
@@ -48,14 +46,14 @@ int main() {
     forThread.fileDescriptor = open("/tmp/pipe", O_RDONLY | O_NONBLOCK);
     
     if (pthread_create(&thread, nullptr, &thread_job, (void*)&forThread))
-        perror("Failed to create thread in lab7_2.cpp.");
+        perror("Failed to create thread in lab7_2. Error");
 
     getchar();
 
     forThread.flag = false;
 
     if (pthread_join(thread, nullptr))
-        perror("Failed to join thread in lab7_2.cpp.");
+        perror("Failed to join thread in lab7_2. Error");
 
     close(forThread.fileDescriptor);
     unlink("/tmp/pipe");

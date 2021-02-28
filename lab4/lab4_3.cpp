@@ -1,6 +1,4 @@
 #include <sched.h>
-#include <cstring>
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -29,7 +27,7 @@ int main(int argc, char *argv[]) {
     int childPid { clone(&child_function, stackHead, SIGCHLD, argv) };
     
     if(childPid == -1) {
-        printf("\nCouldn't clone. Error: %s\n", strerror(errno));
+        perror("Couldn't clone. Error");
 
         free(stack);
 

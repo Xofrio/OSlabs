@@ -1,5 +1,3 @@
-#include <cstring>
-#include <errno.h>
 #include <fcntl.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -34,7 +32,7 @@ void *thread1_job(void *information) {
         ssize_t writeStatus { write(fileDescriptors[writeDescriptor], &buffer, sizeof(int)) };
 
         if (writeStatus == -1)
-            printf("Couldn't write to buffer. Error: %s\n", strerror(errno));
+            perror("Couldn't write to buffer. Error");
         else
             printf("Writer message: %d\n", buffer);
       
@@ -54,7 +52,7 @@ void *thread2_job(void *information) {
         ssize_t readStatus { read(fileDescriptors[readDescriptor], &buffer, sizeof(int)) };
 
         if (readStatus == -1)
-            printf("Got no message from buffer. Error: %s\n", strerror(errno));
+            perror("Got no message from buffer. Error");
         else 
             printf("Message from writer: %d\n", buffer);
         
@@ -73,18 +71,18 @@ int main() {
     pipe2(fileDescriptors, O_NONBLOCK);
     
     if (pthread_create(&thread1, nullptr, &thread1_job, (void*)&forThread1))
-        perror("Failed to create thread 1.");
+        perror("Failed to create thread 1 in lab3_2. Error");
     if (pthread_create(&thread2, nullptr, &thread2_job, (void*)&forThread2))
-        perror("Failed to create thread 2.");
+        perror("Failed to create thread 2 in lab3_2. Error");
     
     getchar();
     
     forThread1.flag = forThread2.flag = false;
 
     if (pthread_join(thread1, nullptr))
-        perror("Failed to join thread 1.");
+        perror("Failed to join thread 1 in lab3_2. Error");
     if (pthread_join(thread2, nullptr))
-        perror("Failed to join thread 2.");
+        perror("Failed to join thread 2 in lab3_2. Error");
 
     close(fileDescriptors[readDescriptor]);
     close(fileDescriptors[writeDescriptor]);

@@ -1,5 +1,4 @@
 #include <cstring>
-#include <errno.h>
 #include <mqueue.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -28,7 +27,7 @@ void *thread_job(void *information) {
         int writeStatus { mq_send(*(&((Accessory*)information)->queue), buffer, strlen(buffer), 0) };
 
         if (writeStatus == -1)
-            printf("Couldn't write to buffer. Error: %s\n", strerror(errno));
+            perror("Couldn't write to buffer. Error");
         else {
             printf("I wrote a message: %s\n", buffer);
             if (buffer[0] == '9')
@@ -48,14 +47,14 @@ int main() {
     forThread.queue = mq_open("/queue", O_CREAT | O_WRONLY | O_NONBLOCK, 0644, nullptr);
 
     if (pthread_create(&thread, nullptr, &thread_job, (void*)&forThread))
-        perror("Failed to create thread in lab8_11.cpp.");
+        perror("Failed to create thread in lab8_11. Error");
 
     getchar();
 
     forThread.flag = false;
 
     if (pthread_join(thread, nullptr))
-        perror("Failed to join thread in lab8_11.cpp.");
+        perror("Failed to join thread in lab8_11. Error");
     
     mq_close(forThread.queue);
     mq_unlink("/queue");

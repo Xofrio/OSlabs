@@ -1,5 +1,3 @@
-#include <cstring>
-#include <errno.h>
 #include <fcntl.h>
 #include <pthread.h>
 #include <signal.h>
@@ -23,7 +21,9 @@ class Accessory {
 void signal_handler(int signalNumber) {
     printf("I managed to intercept SIGPIPE signal.\n"
            "If you terminanated reader not with Enter, you can try to launch reader again.\n"
-           "Press Enter to terminate this program.\n");
+           "Press Enter to terminate this program with a 5 seconds delay.\n");
+    
+    sleep(5);
 }
 
 void *transfer(void *information) {
@@ -40,7 +40,7 @@ void *transfer(void *information) {
         ssize_t writeStatus { write(fileDescriptor, &buffer, sizeof(int)) };
 
         if (writeStatus == -1)
-            printf("Couldn't write to buffer. Error: %s\n", strerror(errno));
+            perror("Couldn't write to buffer. Error");
         else
             printf("I wrote a message: %d\n", buffer);
 
@@ -57,13 +57,13 @@ void *open_(void *information) {
         *(&((Accessory*)information)->fileDescriptor) = open("/tmp/pipe", O_WRONLY | O_NONBLOCK);
 
         if (*(&((Accessory*)information)->fileDescriptor) < 0) {
-            printf("Couldn't open file for writing. Error: %s\n", strerror(errno));
+            perror("Couldn't open file for writing. Error");
 
             sleep(sleepTime);
         }
         else {
             if (pthread_create(&((Accessory*)information)->thread, nullptr, &transfer, information))
-                perror("Failed to create transfering thread in lab7_1.cpp.");
+                perror("Failed to create transfering thread in lab7_1. Error");
 
             pthread_exit(nullptr);
         }
@@ -80,16 +80,16 @@ int main() {
     mkfifo("/tmp/pipe", 0644);
     
     if (pthread_create(&thread, nullptr, &open_, (void*)&forThread))
-        perror("Failed to create opening thread in lab7_1.cpp.");
+        perror("Failed to create opening thread in lab7_1. Error");
 
     getchar();
 
     forThread.flag = false;
 
     if (pthread_join(thread, nullptr))
-        perror("Failed to join opening thread in lab7_1.cpp.");
+        perror("Failed to join opening thread in lab7_1. Error");
     if (pthread_join(forThread.thread, nullptr))
-        perror("Failed to join transfering thread in lab7_1.cpp.");
+        perror("Failed to join transfering thread in lab7_1. Error");
 
     close(forThread.fileDescriptor);
     unlink("/tmp/pipe");

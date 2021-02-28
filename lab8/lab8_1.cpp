@@ -1,5 +1,3 @@
-#include <cstring>
-#include <errno.h>
 #include <mqueue.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -38,7 +36,7 @@ void *thread_job(void *information) {
             writeStatus { msgsnd(*(&((Accessory*)information)->queue), (&((Accessory*)information)->message), messageSize, IPC_NOWAIT) };
 
         if (writeStatus == -1)
-            printf("Couldn't write to buffer. Error: %s\n", strerror(errno));
+            perror("Couldn't write to buffer. Error");
         else {
             printf("I wrote a message: %c\n", *((&((Accessory*)information)->message)->buffer));
             if (counter == 9)
@@ -58,14 +56,14 @@ int main() {
     forThread.queue = msgget(ftok("/tmp", 'a'), IPC_CREAT | 0644);
 
     if (pthread_create(&thread, nullptr, &thread_job, (void*)&forThread))
-        perror("Failed to create thread in lab8_1.cpp.");
+        perror("Failed to create thread in lab8_1. Error");
 
     getchar();
 
     forThread.flag = false;
 
     if (pthread_join(thread, nullptr))
-        perror("Failed to join thread in lab8_1.cpp.");
+        perror("Failed to join thread in lab8_1. Error");
     
     msgctl(forThread.queue, IPC_RMID, nullptr);
 
