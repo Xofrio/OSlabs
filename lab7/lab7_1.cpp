@@ -12,6 +12,7 @@ class Accessory {
         int sleepTime,
             fileDescriptor;
         bool flag;
+        pthread_t thread;
 
         Accessory(int sleepTime, bool flag) {
             this->sleepTime = sleepTime;
@@ -51,7 +52,6 @@ void *transfer(void *information) {
 void *open_(void *information) {
     int sleepTime { *(&((Accessory*)information)->sleepTime) };
     bool *flag { &((Accessory*)information)->flag };
-    pthread_t thread;
 
     while(*flag) {
         *(&((Accessory*)information)->fileDescriptor) = open("/tmp/pipe", O_WRONLY | O_NONBLOCK);
@@ -62,11 +62,10 @@ void *open_(void *information) {
             sleep(sleepTime);
         }
         else {
-            if (pthread_create(&thread, nullptr, &transfer, information))
+            if (pthread_create(&((Accessory*)information)->thread, nullptr, &transfer, information))
                 perror("Failed to create transfering thread in lab7_1.cpp.");
 
-            if (pthread_join(thread, nullptr))
-                perror("Failed to join transfering thread in lab7_1.cpp.");
+            pthread_exit(nullptr);
         }
     }
     pthread_exit(nullptr);
@@ -89,6 +88,8 @@ int main() {
 
     if (pthread_join(thread, nullptr))
         perror("Failed to join opening thread in lab7_1.cpp.");
+    if (pthread_join(forThread.thread, nullptr))
+        perror("Failed to join transfering thread in lab7_1.cpp.");
 
     close(forThread.fileDescriptor);
     unlink("/tmp/pipe");
