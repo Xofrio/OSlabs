@@ -4,6 +4,7 @@
 #include <netinet/in.h>
 #include <pthread.h>
 #include <queue>
+#include <signal.h>
 #include <stdio.h>
 #include <sys/signal.h>
 #include <sys/socket.h>
@@ -32,6 +33,13 @@ class Accessory {
             this->requesterFlag = requesterFlag;
         }
 };
+
+void signal_handler(int signalNumber) {
+    printf("I've managed to intercept SIGPIPE signal.\n"
+           "Press Enter to terminate this program with a 5 second delay.\n");
+    
+    sleep(5 * sleepTime);
+}
 
 void *requester(void *information) {
     int clientSocket  { *(&((Accessory*)information)->clientSocket) },
@@ -106,6 +114,8 @@ void *connector(void *information) {
 
 int main() {
     Accessory forThreads { true, true, true };
+
+    signal(SIGPIPE, &signal_handler);
 
     forThreads.clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
