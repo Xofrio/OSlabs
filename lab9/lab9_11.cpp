@@ -41,8 +41,8 @@ void *receiver(void *information) {
     bool *flag { &((Accessory*)information)->receiverFlag };
     char buffer[bufferSize] { '\0' };
 
-    while (*flag) {
-        int receiveStatus = recv(*(&((Accessory*)information)->serverSocket), (void*)buffer, bufferSize, 0);
+    while(*flag) {
+        ssize_t receiveStatus { recv(*(&((Accessory*)information)->serverSocket), (void*)buffer, bufferSize, 0) } ;
 
         if (receiveStatus == -1) {
             perror("Couldn't receive the request. Error");
@@ -69,7 +69,7 @@ void *handler(void *information) {
     int count { 0 };
     bool *flag { &((Accessory*)information)->handlerFlag };
 
-    while (*flag) {
+    while(*flag) {
         pthread_mutex_lock(&Accessory::mutex);
 
         if (!(&((Accessory*)information)->messageList)->empty()) {
@@ -85,22 +85,22 @@ void *handler(void *information) {
 
             uname(&systemInformation);
 
-            char answer[bufferSize] { '\0' };
+            char buffer[bufferSize] { '\0' };
 
             if (!count)
-                snprintf(answer, sizeof(answer), "Domain name:\t%s", systemInformation.domainname);
+                snprintf(buffer, bufferSize, "Domain name:\t%s", systemInformation.domainname);
             else if (count == 1)
-                snprintf(answer, sizeof(answer), "Machine name:\t%s", systemInformation.machine);
+                snprintf(buffer, bufferSize, "Machine name:\t%s", systemInformation.machine);
             else if (count == 2)
-                snprintf(answer, sizeof(answer), "Node name:\t%s", systemInformation.nodename);
+                snprintf(buffer, bufferSize, "Node name:\t%s", systemInformation.nodename);
             else if (count == 3)
-                snprintf(answer, sizeof(answer), "Release:\t%s", systemInformation.release);
+                snprintf(buffer, bufferSize, "Release:\t%s", systemInformation.release);
             else if (count == 4)
-                snprintf(answer, sizeof(answer), "System name:\t%s", systemInformation.sysname);
+                snprintf(buffer, bufferSize, "System name:\t%s", systemInformation.sysname);
             else if (count == 5)
-                snprintf(answer, sizeof(answer), "Version:\t%s", systemInformation.version);
+                snprintf(buffer, bufferSize, "Version:\t%s", systemInformation.version);
 
-            ssize_t sendStatus { send(*(&((Accessory*)information)->serverSocket), (void*)answer, bufferSize, 0) };
+            ssize_t sendStatus { send(*(&((Accessory*)information)->serverSocket), (void*)buffer, bufferSize, 0) };
 
             if (sendStatus == -1)
                 perror("Couldn't send the message. Error");
@@ -122,7 +122,7 @@ void *handler(void *information) {
 
 void *connector(void *information) {
     bool *flag { &((Accessory*)information)->connectorFlag };
-    socklen_t addressLength = (socklen_t)sizeof(*(&((Accessory*)information)->serverSocketAddress));
+    socklen_t addressLength { (socklen_t)sizeof(*(&((Accessory*)information)->serverSocketAddress)) } ;
 
     while(*flag) {
         *(&((Accessory*)information)->serverSocket) = accept(*(&((Accessory*)information)->listenSocket), (sockaddr *)&((Accessory*)information)->serverSocketAddress, &addressLength);
@@ -158,7 +158,7 @@ int main() {
     forThreads.listenSocketAddress.sin_port = htons(7000);
     forThreads.listenSocketAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    bind(forThreads.listenSocket, (sockaddr *)&forThreads.listenSocketAddress, sizeof(forThreads.listenSocketAddress));
+    bind(forThreads.listenSocket, (sockaddr*)&forThreads.listenSocketAddress, sizeof(forThreads.listenSocketAddress));
 
     int optionValue { 1 };
 

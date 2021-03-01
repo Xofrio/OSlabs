@@ -24,6 +24,7 @@ class Accessory {
         pthread_t receiverThread,
                   requesterThread;
         sockaddr_in clientSocketAddress;
+        socklen_t addressLength;
         
         Accessory(bool receiverFlag, bool requesterFlag) {
             this->receiverFlag = receiverFlag;
@@ -45,7 +46,7 @@ void *requester(void *information) {
     char buffer[bufferSize] { '\0' };
     
     while(*flag) {
-        int length { snprintf(buffer, sizeof(buffer), "Request #%d", requestsCount) };
+        int length { snprintf(buffer, bufferSize, "Request #%d", requestsCount) };
 
         sleep(sleepTime);
 
@@ -70,9 +71,10 @@ void *receiver(void *information) {
 
     while(*flag) {
         memset(buffer, 0, bufferSize);
-        socklen_t addressLength { sizeof(*(&((Accessory*)information)->clientSocketAddress)) };
 
-        ssize_t receiveStatus { recvfrom(clientSocket, &buffer, bufferSize, 0, (sockaddr*)&((Accessory*)information)->clientSocketAddress, &addressLength) };
+        sleep(2 * sleepTime);
+
+        ssize_t receiveStatus { recvfrom(clientSocket, (void*)&buffer, bufferSize, 0, (sockaddr*)&((Accessory*)information)->clientSocketAddress, &((Accessory*)information)->addressLength) };
 
         if (receiveStatus == -1) {
             perror("Couldn't receive message. Error");
@@ -99,6 +101,8 @@ int main() {
     forThreads.clientSocketAddress.sin_family = AF_INET;
     forThreads.clientSocketAddress.sin_port = htons(8000);
     forThreads.clientSocketAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
+
+    forThreads.addressLength = sizeof(forThreads.clientSocketAddress);
 
     if (pthread_create(&forThreads.receiverThread, nullptr, &receiver, (void*)&forThreads))
         perror("Failed to create receiver thread in lab9_2. Error");

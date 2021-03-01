@@ -49,7 +49,7 @@ void *requester(void *information) {
     
     while(*flag) {
         int length { snprintf(buffer, sizeof(buffer), "Request #%d", requestsCount) };
-        ssize_t sendStatus { send(clientSocket, &buffer, (size_t)length, 0) };
+        ssize_t sendStatus { send(clientSocket, (void*)&buffer, (size_t)length, 0) };
 
         if (sendStatus == -1) {
             perror("Couldn't send the request. Error");
@@ -71,7 +71,7 @@ void *receiver(void *information) {
     while(*flag) {
         memset(buffer, 0, bufferSize);
 
-        ssize_t receiveStatus { recv(clientSocket, &buffer, bufferSize, 0) };
+        ssize_t receiveStatus { recv(clientSocket, (void*)&buffer, bufferSize, 0) };
 
         if (receiveStatus == -1) {
             perror("Couldn't receive message. Error");

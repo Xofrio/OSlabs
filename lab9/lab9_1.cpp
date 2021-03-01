@@ -41,8 +41,10 @@ void *receiver(void *information) {
 
     while (*flag) {
         memset(buffer, 0, bufferSize);
+        
+        sleep(2 * sleepTime);
 
-        int receiveStatus = recvfrom(*(&((Accessory*)information)->listenSocket), (void*)buffer, bufferSize, 0, (sockaddr*)&((Accessory*)information)->serverSocketAddress, &((Accessory*)information)->addressLength);
+        ssize_t receiveStatus = recvfrom(*(&((Accessory*)information)->listenSocket), (void*)buffer, bufferSize, 0, (sockaddr*)&((Accessory*)information)->serverSocketAddress, &((Accessory*)information)->addressLength);
 
         if (receiveStatus == -1) {
             perror("Couldn't receive the request. Error");
@@ -85,22 +87,22 @@ void *handler(void *information) {
 
             uname(&systemInformation);
 
-            char answer[bufferSize] { '\0' };
+            char buffer[bufferSize] { '\0' };
 
             if (!count)
-                snprintf(answer, sizeof(answer), "Domain name:\t%s", systemInformation.domainname);
+                snprintf(buffer, bufferSize, "Domain name:\t%s", systemInformation.domainname);
             else if (count == 1)
-                snprintf(answer, sizeof(answer), "Machine name:\t%s", systemInformation.machine);
+                snprintf(buffer, bufferSize, "Machine name:\t%s", systemInformation.machine);
             else if (count == 2)
-                snprintf(answer, sizeof(answer), "Node name:\t%s", systemInformation.nodename);
+                snprintf(buffer, bufferSize, "Node name:\t%s", systemInformation.nodename);
             else if (count == 3)
-                snprintf(answer, sizeof(answer), "Release:\t%s", systemInformation.release);
+                snprintf(buffer, bufferSize, "Release:\t%s", systemInformation.release);
             else if (count == 4)
-                snprintf(answer, sizeof(answer), "System name:\t%s", systemInformation.sysname);
+                snprintf(buffer, bufferSize, "System name:\t%s", systemInformation.sysname);
             else if (count == 5)
-                snprintf(answer, sizeof(answer), "Version:\t%s", systemInformation.version);
+                snprintf(buffer, bufferSize, "Version:\t%s", systemInformation.version);
 
-            ssize_t sendStatus { sendto(*(&((Accessory*)information)->listenSocket), (void*)answer, bufferSize, 0, (sockaddr*)&((Accessory*)information)->serverSocketAddress, *(&((Accessory*)information)->addressLength)) };
+            ssize_t sendStatus { sendto(*(&((Accessory*)information)->listenSocket), (void*)buffer, bufferSize, 0, (sockaddr*)&((Accessory*)information)->serverSocketAddress, *(&((Accessory*)information)->addressLength)) };
 
             if (sendStatus == -1)
                 perror("Couldn't send the message. Error");
@@ -139,8 +141,8 @@ int main() {
 
     setsockopt(forThreads.listenSocket, SOL_SOCKET, SO_REUSEADDR, &optionValue, sizeof(optionValue));
 
-    //listen(forThreads.listenSocket,SOMAXCONN);
     memset(&forThreads.serverSocketAddress, 0, sizeof(forThreads.serverSocketAddress));
+
     forThreads.serverSocketAddress.sin_family = AF_INET;
     forThreads.serverSocketAddress.sin_port = htons(7000);
     forThreads.serverSocketAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
