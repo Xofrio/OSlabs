@@ -64,9 +64,9 @@ int main() {
     int result1 { 0 },
         result2 { 0 };
 
-    if (pthread_join(thread1, nullptr))
+    if (pthread_join(thread1, (void**)&result1))
         perror("Failed to join thread 1 in lab1. Error");
-    if (pthread_join(thread2, nullptr))
+    if (pthread_join(thread2, (void**)&result2))
         perror("Failed to join thread 2 in lab1. Error");
 
     printf("Thread 1 return code: %d.\n", result1);
