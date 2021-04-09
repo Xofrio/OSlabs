@@ -67,7 +67,6 @@ int main() {
     Accessory forThread1 { 1, true },
               forThread2 { 1, true };
 
-    pipe(fileDescriptors);
     pipe2(fileDescriptors, O_NONBLOCK);
     
     if (pthread_create(&thread1, nullptr, &thread1_job, (void*)&forThread1))
