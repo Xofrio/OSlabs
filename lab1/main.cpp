@@ -7,11 +7,11 @@
 struct thread_parameters {
     bool flag;
     char data;
-    int seconds;
-    unsigned long long exit_code;
+    unsigned long long exit_code,
+                       seconds;
 
-    explicit thread_parameters(bool flag, char data, int seconds, unsigned long long exit_code)
-    : flag(flag), data(data), seconds(seconds), exit_code(exit_code) {}
+    explicit thread_parameters(char data, unsigned long long exit_code, bool flag=true, unsigned int seconds=1)
+    : data(data), exit_code(exit_code), flag(flag), seconds(seconds) {}
 };
 
 void *thread_routine(void *information) {
@@ -32,8 +32,8 @@ void *thread_routine(void *information) {
 int main() {
     pthread_t thread1,
               thread2;
-    thread_parameters for_thread1{ true, '1', 1, 6 },
-                      for_thread2{ true, '2', 1, 9 };
+    thread_parameters for_thread1{ '1', 6 },
+                      for_thread2{ '2', 9 };
 
     if (pthread_create(&thread1, nullptr, &thread_routine, reinterpret_cast<void*>(&for_thread1)))
         std::cerr << "Failed to create thread 1: " << strerror(errno) << '\n';
