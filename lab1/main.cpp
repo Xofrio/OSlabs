@@ -15,9 +15,9 @@ struct thread_parameters {
 };
 
 void *thread_routine(void *information) {
-    bool *flag{ &((thread_parameters*)information)->flag };
     const char symbol{ *(&((thread_parameters*)information)->data) };
     const std::chrono::seconds sleep_time{ *(&((thread_parameters*)information)->seconds) };
+    bool *flag{ &((thread_parameters*)information)->flag };
 
     while(*flag) {
         std::cout << symbol << std::flush;
