@@ -7,24 +7,24 @@
 struct thread_parameters {
     bool flag;
     char data;
-    unsigned long long exit_code,
-                       seconds;
+    size_t exit_code,
+           seconds;
 
-    explicit thread_parameters(char data, unsigned long long exit_code, bool flag=true, unsigned int seconds=1)
+    explicit thread_parameters(char data, size_t exit_code, bool flag=true, size_t seconds=1)
     : data(data), exit_code(exit_code), flag(flag), seconds(seconds) {}
 };
 
 void *thread_routine(void *information) {
-    const char symbol{ *(&((thread_parameters*)information)->data) };
-    const std::chrono::seconds sleep_time{ *(&((thread_parameters*)information)->seconds) };
-    bool *flag{ &((thread_parameters*)information)->flag };
+    bool *flag{ &reinterpret_cast<thread_parameters*>(information)->flag };
+    const char symbol{ *&reinterpret_cast<thread_parameters*>(information)->data };
+    const std::chrono::seconds sleep_time{ *&reinterpret_cast<thread_parameters*>(information)->seconds };
 
     while(*flag) {
         std::cout << symbol << std::flush;
 
         std::this_thread::sleep_for(sleep_time);
     }
-    const unsigned long long exit_code{ *(&((thread_parameters*)information)->exit_code) };
+    const size_t exit_code{ *&reinterpret_cast<thread_parameters*>(information)->exit_code };
 
     return reinterpret_cast<void*>(exit_code);
 }
@@ -45,8 +45,8 @@ int main() {
 
     for_thread1.flag = for_thread2.flag = false;
 
-    unsigned long long result1{ 0 },
-                       result2{ 0 };
+    size_t result1{ 0 },
+           result2{ 0 };
 
     if (pthread_join(thread1, reinterpret_cast<void**>(&result1)))
         std::cerr << "Failed to join thread 1: " << strerror(errno) << '\n';
